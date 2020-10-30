@@ -1,0 +1,39 @@
+{
+  "name": "ps2gamelaunch",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "start": "./node_modules/.bin/electron .",
+    "reconf": "./node_modules/.bin/electron-rebuild",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "pack": "./node_modules/.bin/electron-builder --dir",
+    "dist": "./node_modules/.bin/electron-builder"
+  },
+  "build": {
+    "appId": "com.br.rannet.ps2launcher",
+    "win": {
+      "target": "portable",
+      "icon": "icon.png",
+      "publisherName": "RanNet",
+      "requestedExecutionLevel": "asInvoker"
+    },
+    "linux": {
+      "target": "tar.xz"
+    },
+    "compression": "normal",
+    "buildDependenciesFromSource": "true"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "7zip-bin": "^5.0.3",
+    "axios": "^0.21.0",
+    "node-7z": "^2.1.2"
+  },
+  "devDependencies": {
+    "electron": "^10.1.5",
+    "electron-builder": "^22.9.1"
+  }
+}
