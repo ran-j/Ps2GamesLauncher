@@ -163,7 +163,7 @@ h2:after {
 .cards .card:active,
 .news .card:active {
   box-shadow: 0 8px 16px 3px rgba(0,0,0,0.6);
-  transform: translateY(-3px) scale(1.05) rotateX(15deg);
+  transform: translateY(-3px) scale(1.09) rotateX(15deg);
 }
 .cards .card:hover figcaption,
 .news .card:hover figcaption,
@@ -183,6 +183,7 @@ h2:after {
   top: -40%;
   opacity: 0.15;
 }
+
 .news .article {
   overflow: hidden;
   width: 350px;

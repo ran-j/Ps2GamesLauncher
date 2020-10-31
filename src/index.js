@@ -23,7 +23,20 @@ var app = new Vue({
         gameList: [],  // { name: '', image: '', path: '', filename: '', configPath: '' }
         apiKey: secrets.apiKey,
         regionTypes: ['SLUS', 'SLES'],
-        emulatorStarded: false
+        emulatorStarded: false,
+        usingGamePad: false,
+        gamePadButtons: {
+            A: false,
+            B: false,
+            Y: false,
+            Axis: {
+                x: 0,
+                y: 0
+            }
+        },
+        popUp: null,
+        cards: null,
+        cardsIndex: -1
     },
     methods: {
         clearTemp() {
@@ -198,6 +211,7 @@ var app = new Vue({
                 }).catch(console.error)
             }
             // console.log(this.gameList)
+            this.cards = document.getElementsByClassName("card")
             this.clearTemp()
         },
         runCommand(command, callback) {
@@ -251,7 +265,7 @@ var app = new Vue({
                 cancelButtonText: 'Set Up',
                 showLoaderOnConfirm: true,
                 allowOutsideClick: () => !Swal.isLoading()
-            }).then((result) => {                
+            }).then((result) => {
                 if (result.isConfirmed) {
                     let command = `"${config.pcsx2Path}" "${path.join(gameObj.path, gameObj.filename)}" ${config.parans}`
                     if(gameObj.configPath) {
@@ -299,12 +313,14 @@ var app = new Vue({
                                         'Saved',
                                         'success'
                                     )
+                                    this.setButtons('', 'cancel')
                                 } else {
                                     Swal.fire(
                                         'Canceled!',
                                         'Operation canceled.',
                                         'success'
                                     )
+                                    this.setButtons('', 'cancel')
                                 }
                             } else {
                                 Swal.fire(
@@ -312,28 +328,32 @@ var app = new Vue({
                                     'Operation canceled.',
                                     'success'
                                 )
+                                this.setButtons('', 'cancel')
                             }
                         })
+
+                        this.setButtons('', 'settings')
                     } else {
                         Swal.fire(
                             'Canceled!',
                             'Operation canceled.',
                             'success'
                         )
+                        this.setButtons('', 'cancel')
                     }
                 }
             })
-
-            // Swal.fire({
-            //     title: 'Title',
-            //     text: `Do you want to run ${gameObj.name}!`,
-            //     html: "Some Text" +
-            //         "<br>" +
-            //         '<button type="button" role="button" tabindex="0" class="SwalBtn1 customSwalBtn">' + 'Configurar' + '</button>' +
-            //         '<button type="button" role="button" tabindex="0" class="SwalBtn2 customSwalBtn">' + 'Emular' + '</button>',
-            //     showCancelButton: false,
-            //     showConfirmButton: false
-            // });
+            this.setButtons('config', 'runGame')
+        },
+        setButtons (b, popUpname) {
+            setTimeout(() => {
+                this.popUp = popUpname
+                if(this.usingGamePad) {
+                    if(document.getElementsByClassName("swal2-confirm swal2-styled")[0]) document.getElementsByClassName("swal2-confirm swal2-styled")[0].innerHTML += '<img style="padding-left: 2%;" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAABmJLR0QA/wD/AP+gvaeTAAABWklEQVRIid2UvUoDQRSFvxgM2AqKYqEivoSgGHwAYxIjWvgIPkfi+hgxhY1/va2VVkJWE+NDaCe6FnMHBp25s1m7XDhkuHvOuT+bHZj0qAAHQA9IgQ9BKrmWcApFA3gFsgiGQH0c4zJwlsP4NxJgKk+BIuYWnZh5QxF/ikECfCm8Wsi8gtlnSHjncO8V3gjnxbs72wPWlOlunPOlwlsFdn0PekpXGbACzANzwHqE2/UVeFEEj8I5BPbl/KTwU2vqrmhRGftafneAqpy1NS35CmQ5CpQEAFcK3+v1jH/cN8VoFND0LcGd4CFgYjvdAtqCTcndBjRer1agm215fuHkziVXDWia1rTsFBgAR8Csk/vGXHgbwDEwI/kFzPTL0kDJ0QyBE9H+iXqgo3Hg/cjcSP5h3o6ZI6OfFjDvkPO6tlHDvJeY8YAcawnFNOZq6GL+2++CvuSawpng+AGUCdWz9DgDuAAAAABJRU5ErkJggg=="/>'
+                    if(b === 'config') document.getElementsByClassName("swal2-cancel swal2-styled")[0].innerHTML += '<img style="padding-left: 2%;" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAABmJLR0QA/wD/AP+gvaeTAAABWUlEQVRIid2UQUoDQRBFn0oCEcWs9AgiCB7FkMTEW+hSLxCNcaO41J14DnGjIK4zEuMBshqixp3joqu1Gbp6JpNdPhQUv3//rq6aaZh3lIE2cAdEwKdEJFxLNIXQAIZAkhFvQH0a4yXgPIdxOnrAYp4Dipjb6GaZN2Ywt1HTzMuYfqY3XMr6JvAj3JZwVx79O8rg20pFX8C6aB6Ae8k3gImyZ8+aukPRrrYMHEh+A1xLfghUlD27PvJVqSYBYmBNDqtIHgf0ke+AcWBDAhw52uMM7dgK3RYtKNe1+FZyHxIfGWrRCNOeVWBF8lFA/9ci9wYvgYouMF/MPub9mfD/+frw7CNbSjUxUBXNE/AoeRV90E3fASVg4BF3ZH3b4XaEO/HohwRe2LpS0TTh/Qdc9GYwP80yBzP4swLmXXI+1xY1/DNJx4AcbdFQwjxct0Af+JDoC9cUzRzjF1b/6w4nRkX6AAAAAElFTkSuQmCC"/>'
+                    else document.getElementsByClassName("swal2-cancel swal2-styled")[0].innerHTML += '<img style="padding-left: 2%;" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAABmJLR0QA/wD/AP+gvaeTAAABP0lEQVRIid2UsUoDQRCGPxJyFr6CiGCj2Aj6CinEwpCLiS8jWBqTIo1vEPMa+gCKhUVOTvEB7GI6hVjsLAbZuZ27dBn4ud25//7Zf2dvYd0jAXrABMiAuSCTXFc4lSIF3oFFBG9Au4xwHRgahP9jANQsBaqIe/Rj4ukK4h4tTTxB3/O9Jd4GcADcKdwcpfG9glX5Ak3gFNenGvCi8M9DBSaGAs8yv5D5SOGPvehy149CVQOxAD5lvK1wjkPJmcHBPrAj4xT4UfizkANLbAGHwCZwD3yU+fjV4MD34FLmVwo/Czl4KrGYb3nOlfePoWTX4KAJnPB3zh8UfidUIMFdXLEfrQ7sArcKNwcaijPaBS6sONPEfQxWEL+OiYNr/E0F8T4lj30Lt58x4RzDtmjRwF1cY2AKfAmmkutQ0ND1iF/nFeH8ST/nhgAAAABJRU5ErkJggg=="/>'
+                }
+            }, 100) 
         },
         editConfig() {
             Swal.fire({
@@ -370,6 +390,7 @@ var app = new Vue({
                     )
                 }
             })
+            this.setButtons('', 'editConfig')
         },
         help() {
             Swal.fire({
@@ -398,6 +419,43 @@ var app = new Vue({
             console.log("Using config", config)
             this.refreshLibrary()
         }
+
+        var _vm = this
+        var i = 1; 
+        var interval = null
+        window.addEventListener("gamepadconnected", function(e) {
+            _vm.usingGamePad = true;
+            console.log(e.gamepad.index)
+            var gp = navigator.getGamepads()[e.gamepad.index];
+
+            console.log("A " + gp.id + " was successfully detected! There are a total of " + gp.buttons.length + " buttons.")
+
+            interval = setInterval(function(){
+                _vm.gamePadButtons.A = navigator.getGamepads()[e.gamepad.index].buttons[0].pressed
+                _vm.gamePadButtons.B = navigator.getGamepads()[e.gamepad.index].buttons[1].pressed
+                _vm.gamePadButtons.Y = navigator.getGamepads()[e.gamepad.index].buttons[2].pressed
+                _vm.gamePadButtons.Pause = navigator.getGamepads()[e.gamepad.index].buttons[9].pressed
+                _vm.gamePadButtons.Axis.x = navigator.getGamepads()[e.gamepad.index].axes[0]
+                // console.log(navigator.getGamepads()[e.gamepad.index].axes[0]);
+                console.log(_vm.gamePadButtons.A)
+                // if(_vm.gamePadButtons.A) {
+                   
+                // }
+            }, 100)
+
+            this.cardsIndex = 0
+        });
+
+        window.addEventListener("gamepaddisconnected", function(e) {
+            console.log("Gamepad disconnected from index %d: %s", e.gamepad.index, e.gamepad.id); 
+            _vm.usingGamePad = false;
+            _vm.gamePadButtons.A = false
+            _vm.gamePadButtons.B = false
+            _vm.gamePadButtons.Y = false
+            _vm.gamePadButtons.Pause = false
+            if(interval) clearInterval(interval)
+            this.cardsIndex = -1
+        });
     },
     watch: {
         gameList: {
@@ -405,6 +463,61 @@ var app = new Vue({
                 if(after) {
                     // console.log(after)
                     localStorage.setItem("gameList", JSON.stringify(after))
+                }
+            },
+            deep: true
+        },
+        gamePadButtons: {
+            handler: function (after, before) {
+                if(after) {
+                    if(this.popUp) {
+                        if(after.A) {
+                            console.log(`da ok`)
+                            document.getElementsByClassName("swal2-confirm swal2-styled")[0].click()
+                            this.popUp = null
+                        } else if (after.B && this.popUp !== 'canceling') {
+                            console.log(`cancela`)
+                            Swal.fire(
+                                'Canceled!',
+                                'Operation canceled.',
+                                'success'
+                            )
+                            this.setButtons('', 'canceling')
+                        } else if (after.Y) {
+                            console.log(`set up`)
+                            document.getElementsByClassName("swal2-cancel swal2-styled")[0].click()
+                            this.popUp = null
+                        }
+                    } else {
+                        if(after.A) {
+                            if(this.cardsIndex > -1) document.getElementsByClassName("card")[this.cardsIndex].click()
+                        }
+                    }
+                    if(after.Axis.x >= 1) {
+                        if(this.cardsIndex < document.getElementsByClassName("card").length -1) {
+                            this.cardsIndex += 1
+                        } else {
+                            this.cardsIndex = 0
+                        }
+                    } else if (after.Axis.x <= -1) {
+                        if(this.cardsIndex > 0) this.cardsIndex -= 1
+                    }
+                }
+            },
+            deep: true
+        },
+        cardsIndex : {
+            handler: function (after, before) {
+                // console.log(after)
+                if(before > -1) {
+                    document.getElementsByClassName("card")[before].style.transition = ''
+                    document.getElementsByClassName("card")[before].style.boxShadow = ''
+                    document.getElementsByClassName("card")[before].style.transform = ''
+                }
+                if(after > -1) {
+                    document.getElementsByClassName("card")[after].style.transition = '0.3s'
+                    document.getElementsByClassName("card")[after].style.boxShadow = '0 8px 16px 3px rgba(0,0,0,0.6)'
+                    document.getElementsByClassName("card")[after].style.transform = 'translateY(-3px) scale(1.09) rotateX(15deg)'
                 }
             },
             deep: true
