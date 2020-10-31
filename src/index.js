@@ -253,6 +253,7 @@ var app = new Vue({
               })
         },
         runGame(gameObj, index) {
+            if(this.emulatorStarded) return;
             Swal.fire({
                 title: 'Run game?',
                 text: `Do you want to run ${gameObj.name}!`,
@@ -281,11 +282,13 @@ var app = new Vue({
                                 icon: 'error',
                                 title: 'Erro to run command: '+ command,
                             })
+                            this.setButtons('', 'error')
                         } else {
                             Swal.fire({
                                 icon: 'success',
                                 title: 'Emulation end',
                             })
+                            this.setButtons('', 'success')
                         }
                     })
                 } else {
@@ -469,7 +472,7 @@ var app = new Vue({
         },
         gamePadButtons: {
             handler: function (after, before) {
-                if(after) {
+                if(after && !this.emulatorStarded) {
                     if(this.popUp) {
                         if(after.A) {
                             console.log(`da ok`)
