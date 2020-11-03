@@ -34,8 +34,8 @@
 			<div class='nav'><a class='logo' href='#'><img src='./pslogo.png'></a>
 				<ul>
 					<li><a href='#'>Home</a></li>
-					<li><a @click="editConfig" href='#'>Config</a></li>
-					<li><a @click="refreshLibrary()" href='#'>Refresh</a></li>
+					<li><a @click="editConfig" href='#'>Config <img v-if="usingGamePad" style="width: 15%;" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAABmJLR0QA/wD/AP+gvaeTAAABUUlEQVRIie3VzyttURQH8A9eFAM9uUomUt7AVBSRoamJ/AfyH5gyM1D8CW9iohd1maJ0Y0BeyUQpAzFEfqTXI29w9+V02vc63VvPxLdWe5/vWnuttfdaex++8Nmoy2jXilEMoDdIe+CbcYNlLOIla/BWTKOAZ7xmkB10fuS4BfMhqyxO03KB7nLOh3FepeOknMV2MoWnhFEBs7hKLV4L/CzmcFwmyHrS+Q/8SRksBd3vFD8T+H58RxNOIwFuoT4Yj6Ox3LmVwSFWQ2LbEf1JMsCHlY/gAJuKrd4f0W/Bt/CRqyLAYBiH0BfR53nfQTUBSo2wj58p3SWOag1AscBwl+I3QgJvR9RRwckYGsL8OsG34T6Mk6k1+dKkUg1GsBDhJ7zf1JxiB3Yl9A8iXfWo9ttbkl9Jx6Ua7EUyrRYrMbIHu/hbQ+a3io9k1l/AF/4T/gGipI54xZm7IQAAAABJRU5ErkJggg=="/></a></li>
+					<li><a @click="refreshLibrary()" href='#'>Reload <img v-if="usingGamePad" style="width: 15%;" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAABmJLR0QA/wD/AP+gvaeTAAABkklEQVRIie3UsUtVcRQH8M+TUKEyEWx4SFDUEAUiNDlIUEsEtjYIhQ4RNLyh0UGpwf6BHFqaAsHBcBWNipa2RjUabGkIn6BhmOhwf5f78/pTXk/BxS8cuPfcc873e875/S6nOGlUEr4zeI4aOvEHdfzGMhbxFZ+w9r+EVXzATgP2L5A8wYVGil/GSoPFy1bHOM4epvx7k8Vj+4H+uHC+g/cYLJGOhjFADx7hPDYxFsVdxRDaw/smHmMqLlZPqGlHF3rRgoHgXw05F3EziHxYyv2LazHB5wMI8sSnIe5nRFAL3+7KTls5/5mgDOYdjq2g9Fzk+yU7cYvoS+RU45dbB3TQhRuh+LC9I4rxNpH/Jg6oyNovE1zH7RDzrURQwzYeoCM8x/kzFCPawWxCWS9eBwGTie8taMOG4sTl6C4H30t0kC/5jmz+a1EHbUE5jNg/oiWy/06OBawrFvlScdReYU622EuYCP5W2T24n+huXwcwnVDSrG1Q7CDHuxRrk/iSclbwQvpmN2pb+Igrxyj2FEfALimRsoRgCE6JAAAAAElFTkSuQmCC"/></a></li>
 					<li><a @click="help" href='#'>Help</a></li>
 				</ul>
 			</div>
