@@ -9,8 +9,10 @@ function createWindow () {
     center: true,
     autoHideMenuBar: true,
     maximize: true,
+    hasShadow: true,
     webPreferences: {
-      nodeIntegration: true 
+      nodeIntegration: true,
+      enableRemoteModule: true
     },
     // icon: __dirname + 'icon.png'
   }) 

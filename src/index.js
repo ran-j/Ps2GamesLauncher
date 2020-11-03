@@ -4,6 +4,7 @@ const axios = require('axios')
 const Seven = require('node-7z')
 const secrets = require('./secret')
 const sevenBin = require('7zip-bin')
+const { remote } = require('electron');
 const execProc = require('child_process').exec
 
 const defaultsConfig = {
@@ -39,6 +40,17 @@ var app = new Vue({
         cardsIndex: -1
     },
     methods: {
+        hideApp () {
+            remote.getCurrentWindow().hide()
+        },
+        focusApp () {
+            var win = remote.getCurrentWindow();
+            win.setAlwaysOnTop(true);
+            win.focus();
+            win.setAlwaysOnTop(false);
+            remote.getCurrentWindow().show()
+            console.log("Focus");
+        },
         clearTemp() {
             fs.rmdirSync(this.dir, { recursive: true });
         },
@@ -278,7 +290,14 @@ var app = new Vue({
                         command += ` --cfgpath="${gameObj.configPath}"`
                     }
                     console.log("Running:"+ command )
+
                     this.showLoadingEmulator()
+
+                    setTimeout(() => {
+                        console.log('hidding app')
+                        this.hideApp()
+                    }, 2000)
+
                     this.runCommand(command, (error, stdout) => {
                         console.log(error, stdout)
                         this.emulatorStarded = false
@@ -289,6 +308,7 @@ var app = new Vue({
                             })
                             this.setButtons('', 'error')
                         } else {
+                            this.focusApp()
                             Swal.fire({
                                 icon: 'success',
                                 title: 'Emulation end',
