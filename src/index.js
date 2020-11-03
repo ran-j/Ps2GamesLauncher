@@ -259,6 +259,16 @@ var app = new Vue({
                     }
                 } catch (error) {
                     console.log(error)
+                    var extension = path.extname(file);
+                    var fileNameNoExtension = path.basename(file, extension);
+                    this.gameList.push({
+                        name: fileNameNoExtension,
+                        region: 'Unknow',
+                        image: blanckImg,
+                        filename: file,
+                        path: config.gamesPath,
+                        configPath: ''
+                    })
                 }
             }
             // console.log(this.gameList)
