@@ -139,7 +139,7 @@ h2:after {
   padding-bottom: 10px;
   font-size: 20px;
   background: none;
-  color: #fff;
+  color: #de0b0b;
   transform: translateY(100%);
   transition: 0.3s;
 }

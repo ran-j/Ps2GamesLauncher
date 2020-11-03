@@ -24,6 +24,7 @@ var app = new Vue({
         gameList: [],  // { name: '', image: '', path: '', filename: '', configPath: '' }
         apiKey: secrets.apiKey,
         regionTypes: ['SLUS', 'SLES'],
+        regionTyeps2: ['SCUS'],
         emulatorStarded: false,
         usingGamePad: false,
         gamePadButtons: {
@@ -201,8 +202,9 @@ var app = new Vue({
         },
         async decodeName({ region }, { NTSCJ, NTSCU, PAL }) {
             const regionIdentify = this.regionTypes.indexOf(region.split('-')[0]);
+            const regionIdentify2 = this.regionTyeps2.indexOf(region.split('-')[0]);
             const regionCode = region;
-            const regionList = regionIdentify === 0 ? NTSCU : regionIdentify === 1 ? PAL : NTSCJ
+            const regionList = regionIdentify === 0 ? NTSCU : regionIdentify === 1 ? PAL : regionIdentify2 === 0 ? NTSCU : NTSCJ
             return regionList.find((gameInfo) => gameInfo.code === regionCode)
         },
         async refreshLibrary() {
