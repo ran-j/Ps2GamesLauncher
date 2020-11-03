@@ -54,7 +54,12 @@ var app = new Vue({
                     // handling error
                     if (err) {
                         console.log('Unable to scan directory: ' + err)
-                        return reject(err)
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Erro to search for game in '+directory,
+                        })
+                        this.setButtons('', 'error')
+                        return resolve([])
                     }
                     const output = []
                     files.forEach(function (file, index, arr) {
