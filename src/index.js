@@ -75,7 +75,7 @@ var app = new Vue({
                     }
                     const output = []
                     files.forEach(function (file, index, arr) {
-                        if (file.indexOf('.iso') > -1) {
+                        if (path.extname(file) === '.iso') {
                             output.push(file)
                         }
                     })
@@ -207,28 +207,67 @@ var app = new Vue({
         },
         async refreshLibrary() {
             this.gamesListMeta = []
+            Swal.fire({
+                title: 'Refreshing library',
+                html: 'Searching games and geting covers',
+                timer: 900000,
+                timerProgressBar: true,
+                allowOutsideClick: () => !Swal.isLoading(),
+                willOpen: () => {
+                  Swal.showLoading()
+                }
+              }).then((result) => {
+                /* Read more about handling dismissals below */
+                if (result.dismiss === Swal.DismissReason.timer) {
+                  console.log('I was closed by the timer')
+                }
+            })
+
             const files = await this.getIsoList(config.gamesPath)
             const { NTSCJ, NTSCU, PAL } = require('./database/index')
             const blanckImg = 'data:image/jpeg;base64,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'
             this.gameList = []
             for await (const file of files) {
-                const cnFPath = await this.extractCnf(config.gamesPath, file)
-                const cnfInfo = await this.incorporateCnf(cnFPath, file)
-                const gameInfo = await this.decodeName(cnfInfo, { NTSCJ, NTSCU, PAL })
-                let index = (this.gameList.push({
-                    name: gameInfo.name,
-                    region: gameInfo.code,
-                    image: blanckImg,
-                    filename: file,
-                    path: config.gamesPath,
-                    configPath: ''
-                })) - 1
-                this.getImage(gameInfo.name).then((image) => {
-                    this.gameList[index].image = image ? image.basePath + image.filename : blanckImg
-                }).catch(console.error)
+                try {
+                    const cnFPath = await this.extractCnf(config.gamesPath, file)
+                    const cnfInfo = await this.incorporateCnf(cnFPath, file)
+                    const gameInfo = await this.decodeName(cnfInfo, { NTSCJ, NTSCU, PAL })
+                    try {
+                        let index = (this.gameList.push({
+                            name: gameInfo.name,
+                            region: gameInfo.code,
+                            image: blanckImg,
+                            filename: file,
+                            path: config.gamesPath,
+                            configPath: ''
+                        })) - 1
+                        this.getImage(gameInfo.name).then((image) => {
+                            this.gameList[index].image = image ? image.basePath + image.filename : blanckImg
+                        }).catch(console.error)
+                    } catch (error) {
+                        console.log(error)
+                        var extension = path.extname(cnfInfo.fileName);
+                        var fileNameNoExtension = path.basename(cnfInfo.fileName, extension);
+                        this.gameList.push({
+                            name: fileNameNoExtension,
+                            region: cnfInfo.region,
+                            image: blanckImg,
+                            filename: file,
+                            path: config.gamesPath,
+                            configPath: ''
+                        })
+                    }
+                } catch (error) {
+                    console.log(error)
+                }
             }
             // console.log(this.gameList)
             this.cards = document.getElementsByClassName("card")
+            Swal.fire({
+                icon: 'success',
+                title: 'Refresh end',
+            })
+            this.setButtons('', 'success')
             this.clearTemp()
         },
         runCommand(command, callback) {
@@ -466,9 +505,6 @@ var app = new Vue({
                 _vm.gamePadButtons.Axis.x = navigator.getGamepads()[e.gamepad.index].axes[0]
                 // console.log(navigator.getGamepads()[e.gamepad.index].axes[0]);
                 console.log(_vm.gamePadButtons.A)
-                // if(_vm.gamePadButtons.A) {
-                   
-                // }
             }, 100)
 
             this.cardsIndex = 0
