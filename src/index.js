@@ -16,12 +16,14 @@ const defaultsConfig = {
 
 var config = localStorage.getItem('config') ? JSON.parse(localStorage.getItem('config')) : defaultsConfig
 
+var gameConfigPath = localStorage.getItem('gameConfigPath') ? JSON.parse(localStorage.getItem('gameConfigPath')) : {}
+
 var app = new Vue({
     el: '#app',
     data: {
         dir: './tmp',
         gamesListMeta: [],
-        gameList: [],  // { name: '', image: '', path: '', filename: '', configPath: '' }
+        gameList: [],  // { name: '', image: '', path: '', filename: '', configPath: '', region: '' }
         apiKey: secrets.apiKey,
         regionTypes: ['SLUS', 'SLES'],
         regionTyeps2: ['SCUS'],
@@ -46,11 +48,11 @@ var app = new Vue({
             remote.getCurrentWindow().hide()
         },
         focusApp () {
+            remote.getCurrentWindow().show()
             var win = remote.getCurrentWindow();
             win.setAlwaysOnTop(true);
             win.focus();
             win.setAlwaysOnTop(false);
-            remote.getCurrentWindow().show()
             console.log("Focus");
         },
         clearTemp() {
@@ -344,9 +346,11 @@ var app = new Vue({
             }).then((result) => {
                 if (result.isConfirmed) {
                     let command = `"${config.pcsx2Path}" "${path.join(gameObj.path, gameObj.filename)}" ${config.parans}`
-                    if(gameObj.configPath) {
-                        command += ` --cfgpath="${gameObj.configPath}"`
+
+                    if(gameConfigPath[gameObj.region]) {
+                        command += ` --cfgpath="${gameConfigPath[gameObj.region]}"`
                     }
+
                     console.log("Running:"+ command )
 
                     this.showLoadingEmulator()
@@ -394,6 +398,8 @@ var app = new Vue({
                                 const cfgpath = document.getElementById("cfgpath").value
                                 if(cfgpath) {
                                     this.gameList[index].configPath = cfgpath
+                                    gameConfigPath[gameObj.region] = cfgpath
+                                    localStorage.setItem('gameConfigPath', JSON.stringify(gameConfigPath))
                                     Swal.fire(
                                         'Success!',
                                         'Saved',
