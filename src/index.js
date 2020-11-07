@@ -9,7 +9,7 @@ const execProc = require('child_process').exec
 
 const defaultsConfig = {
     gamesPath: 'none',
-    pcsx2Path: 'C:\\Program Files (x86)\\PCSX2\\pcsx2.exe',
+    pcsx2Path: 'none',
     parans: '--fullscreen --nogui',
     default: true
 }
@@ -84,7 +84,7 @@ var app = new Vue({
                         }
                     })
                     resolve(output)
-                })
+                }.bind(this))
             })
         },
         extractCnf(directory, file) {
@@ -507,6 +507,16 @@ var app = new Vue({
                 if(config.gamesPath === 'none') {
                     config.gamesPath = path.join(require('os').homedir(), 'PCSX2/games')
                 }
+
+                if(config.pcsx2Path === 'none') {
+                    const isWin = process.platform === "win32";
+                    if(isWin) {
+                        config.pcsx2Path = 'C:\\Program Files (x86)\\PCSX2\\pcsx2.exe'
+                    } else {
+                        config.pcsx2Path = '/usr/bin/PCSX2-1.4.0/PCSX2'
+                    }
+                }
+
             }
             console.log("Using config", config)
             this.refreshLibrary()

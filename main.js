@@ -12,7 +12,8 @@ function createWindow () {
     hasShadow: true,
     webPreferences: {
       nodeIntegration: true,
-      enableRemoteModule: true
+      enableRemoteModule: true,
+      devTools: false
     },
     // icon: __dirname + 'icon.png'
   }) 
