@@ -6,10 +6,10 @@ A simple ps2 library and game launcher for pcsx2.
 ## Sumary
 
 - [Installation](#installation)
-- [Releases](#https://github.com/ran-j/Ps2GamesLauncher/releases/)
+- [Releases](https://github.com/ran-j/Ps2GamesLauncher/releases/)
 - [Features](#features)
 - [Configuration](#configuration)
-- [Screenshot](#screenshot)
+- [Screenshots](#screenshots)
 
 ## Installation
 
