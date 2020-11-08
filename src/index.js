@@ -88,45 +88,49 @@ var app = new Vue({
         },
         extractCnf(directory, file) {
             return new Promise((resolve, reject) => {
-                this.creteTempFolder()
-                let output = path.join(this.dir, file.split(".")[0])
-                if (!fs.existsSync(output)) {
-                    fs.mkdirSync(output);
+                try {                    
+                    this.creteTempFolder()
+                    let output = path.join(this.dir, file.split(".")[0])
+                    if (!fs.existsSync(output)) {
+                        fs.mkdirSync(output);
+                    }
+                    const pathTo7zip = sevenBin.path7za
+                    var myStream = Seven.extract(path.join(directory, file), output, {
+                        recursive: true,
+                        $cherryPick: '*.cnf',
+                        // $bin: pathTo7zip,
+                        $progress: true
+                    })
+                    myStream.on('end', function () {
+                        console.log('done')
+                        resolve(output)
+                    })
+                    myStream.on('error', (err) => {
+                        console.log(err)
+                        reject(err)
+                    })
+                    myStream.on('progress', function (progress) {
+                        console.log(progress) // ? { percent: 67, fileCount: 5, file: undefinded }
+                    })
+                    // var myTask = new Zip();
+                    // myTask.extractFull(path.join(directory, file), output, { wildcards: ['*.cnf'], r: true })
+                    // 	// Equivalent to `on('data', function (files) { // ... });`
+                    // 	.progress(function (files) {
+                    // 		console.log('Some files are extracted: %s', files);
+                    // 	})
+                    // 	// When all is done
+                    // 	.then(function () {
+                    // 		console.log('Extracting done!');
+                    // 		resolve(output)
+                    // 	})
+                    // 	// On error
+                    // 	.catch(function (err) {
+                    // 		console.error(err);
+                    // 		reject(err)
+                    // 	});
+                } catch (error) {
+                    return reject(error)
                 }
-                const pathTo7zip = sevenBin.path7za
-                var myStream = Seven.extract(path.join(directory, file), output, {
-                    recursive: true,
-                    $cherryPick: '*.cnf',
-                    // $bin: pathTo7zip,
-                    $progress: true
-                })
-                myStream.on('end', function () {
-                    console.log('done')
-                    resolve(output)
-                })
-                myStream.on('error', (err) => {
-                    console.log(err)
-                    reject(err)
-                })
-                myStream.on('progress', function (progress) {
-                    console.log(progress) // ? { percent: 67, fileCount: 5, file: undefinded }
-                })
-                // var myTask = new Zip();
-                // myTask.extractFull(path.join(directory, file), output, { wildcards: ['*.cnf'], r: true })
-                // 	// Equivalent to `on('data', function (files) { // ... });`
-                // 	.progress(function (files) {
-                // 		console.log('Some files are extracted: %s', files);
-                // 	})
-                // 	// When all is done
-                // 	.then(function () {
-                // 		console.log('Extracting done!');
-                // 		resolve(output)
-                // 	})
-                // 	// On error
-                // 	.catch(function (err) {
-                // 		console.error(err);
-                // 		reject(err)
-                // 	});
             })
         },
         incorporateCnf(filePath, file) {
@@ -368,20 +372,24 @@ var app = new Vue({
 
                     this.showLoadingEmulator()
 
+                    let hideapp = true
+
                     setTimeout(() => {
                         console.log('hidding app')
-                        this.hideApp()
+                        if (hideapp) this.hideApp()
                     }, 2000)
 
                     this.runCommand(command, (error, stdout) => {
                         console.log(error, stdout)
                         this.emulatorStarded = false
                         if(error) {
+                            hideapp = false
                             Swal.fire({
                                 icon: 'error',
                                 title: 'Erro to run command: '+ command,
                             })
                             this.setButtons('', 'error')
+                            this.focusApp()
                         } else {
                             this.focusApp()
                             Swal.fire({
