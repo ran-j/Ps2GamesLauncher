@@ -25,8 +25,7 @@ var app = new Vue({
         gamesListMeta: [],
         gameList: [],  // { name: '', image: '', path: '', filename: '', configPath: '', region: '' }
         apiKey: secrets.apiKey,
-        regionTypes: ['SLUS', 'SLES'],
-        regionTyeps2: ['SCUS'],
+        regionTypes: ['SLUS', 'SCUS', 'SLES', 'PAL'],
         emulatorStarded: false,
         usingGamePad: false,
         gamePadButtons: {
@@ -205,9 +204,20 @@ var app = new Vue({
         },
         async decodeName({ region }, { NTSCJ, NTSCU, PAL }) {
             const regionIdentify = this.regionTypes.indexOf(region.split('-')[0]);
-            const regionIdentify2 = this.regionTyeps2.indexOf(region.split('-')[0]);
             const regionCode = region;
-            const regionList = regionIdentify === 0 ? NTSCU : regionIdentify === 1 ? PAL : regionIdentify2 === 0 ? NTSCU : NTSCJ
+            
+            var regionList = []
+
+            if (regionIdentify === 1 || regionIdentify === 0) {
+                regionList = NTSCU
+            } else if (regionIdentify === 2) {
+                regionList = NTSCJ
+            } else if (regionIdentify === 3) {
+                regionList = PAL
+            } else {
+                regionList = [ ...NTSCU, ...NTSCJ, ...PAL ]
+            }
+
             return regionList.find((gameInfo) => gameInfo.code === regionCode)
         },
         async refreshLibrary() {
@@ -269,14 +279,17 @@ var app = new Vue({
                         console.log(error)
                         var extension = path.extname(file);
                         var fileNameNoExtension = path.basename(file, extension);
-                        this.gameList.push({
+                        let index = (this.gameList.push({
                             name: fileNameNoExtension,
                             region: 'Unknow',
                             image: blanckImg,
                             filename: file,
                             path: config.gamesPath,
                             configPath: ''
-                        })
+                        }) - 1)
+                        this.getImage(fileNameNoExtension).then((image) => {
+                            this.gameList[index].image = image ? image.basePath + image.filename : blanckImg
+                        }).catch(console.error)
                     }
                 }
                 // console.log(this.gameList)
