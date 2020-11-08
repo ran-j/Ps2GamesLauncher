@@ -1,7 +1,7 @@
 {
   "name": "ps2gamelaunch",
   "version": "1.0.0",
-  "description": "",
+  "description": "A pcsx2 games launcher",
   "main": "main.js",
   "scripts": {
     "start": "./node_modules/.bin/electron .",
@@ -25,7 +25,7 @@
     "buildDependenciesFromSource": "true"
   },
   "keywords": [],
-  "author": "",
+  "author": "Ranieri Junior ran-junior@hotmail.com",
   "license": "ISC",
   "dependencies": {
     "7zip-bin": "^5.0.3",
