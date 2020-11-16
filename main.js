@@ -15,7 +15,7 @@ function createWindow () {
       enableRemoteModule: true,
       devTools: false
     },
-    // icon: __dirname + 'icon.png'
+    icon: __dirname + 'logo.icon'
   }) 
   mainWindow.maximize()
   // and load the index.html of the app.

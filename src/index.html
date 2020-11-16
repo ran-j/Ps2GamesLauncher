@@ -9,7 +9,7 @@
 </head>
 
 <style>
-	.customSwalBtn{
+	.customSwalBtn {
 		background-color: rgba(214,130,47,1.00);
 		border-left-color: rgba(214,130,47,1.00);
 		border-right-color: rgba(214,130,47,1.00);
@@ -47,7 +47,7 @@
 
 			<div class="cards">
 
-				<figure @click="runGame(game, i)" class="card" v-for="(game, i) in gameList">
+				<figure @click="runGame(game, i)" @mouseover="cardsIndex = i" class="card" v-for="(game, i) in gameList">
 
 					<img :src="game.image" />
 

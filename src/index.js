@@ -40,7 +40,10 @@ var app = new Vue({
         popUp: null,
         cards: null,
         cardsIndex: -1,
-        refreshing: false
+        refreshing: false,
+        mouseX: 0,
+        mouseY: 0,
+        canHideMouse: true
     },
     methods: {
         hideApp () {
@@ -111,23 +114,7 @@ var app = new Vue({
                     })
                     myStream.on('progress', function (progress) {
                         console.log(progress) // ? { percent: 67, fileCount: 5, file: undefinded }
-                    })
-                    // var myTask = new Zip();
-                    // myTask.extractFull(path.join(directory, file), output, { wildcards: ['*.cnf'], r: true })
-                    // 	// Equivalent to `on('data', function (files) { // ... });`
-                    // 	.progress(function (files) {
-                    // 		console.log('Some files are extracted: %s', files);
-                    // 	})
-                    // 	// When all is done
-                    // 	.then(function () {
-                    // 		console.log('Extracting done!');
-                    // 		resolve(output)
-                    // 	})
-                    // 	// On error
-                    // 	.catch(function (err) {
-                    // 		console.error(err);
-                    // 		reject(err)
-                    // 	});
+                    })         
                 } catch (error) {
                     return reject(error)
                 }
@@ -552,7 +539,42 @@ var app = new Vue({
             var gp = navigator.getGamepads()[e.gamepad.index];
 
             console.log("A " + gp.id + " was successfully detected! There are a total of " + gp.buttons.length + " buttons.")
+            _vm.canHideMouse = true
             let onlyOnce = false
+            //hide mouse
+            document.body.style.cursor = 'none';
+
+            let waitingToHide = false;
+            let once = false;
+            const veriFyTimeof = () => {
+                if(once) return ;
+                once = true
+                setTimeout(() => {
+                    if (_vm.mouseX !== e.screenX || _vm.mouseY !== e.screenY) {
+                        if (_vm.canHideMouse) document.body.style.cursor = 'none';
+                        waitingToHide = false
+                        console.log("hidding")
+                        once = false
+                    }
+                }, 2000)
+            }
+
+            document.addEventListener("mousemove", (e) => {
+                _vm.mouseX = e.screenX
+                _vm.mouseY = e.screenY
+                if(!waitingToHide) {
+                    waitingToHide = true;
+                    document.body.style.cursor = 'default';
+
+                    5
+                    console.log("showing")
+                    veriFyTimeof()
+                } else {
+                    veriFyTimeof()
+                }
+            });
+
+            //events
             interval = setInterval(function(){
                 _vm.gamePadButtons.A = navigator.getGamepads()[e.gamepad.index].buttons[0].pressed
                 _vm.gamePadButtons.B = navigator.getGamepads()[e.gamepad.index].buttons[1].pressed
@@ -570,13 +592,15 @@ var app = new Vue({
                 } else {
                     onlyOnce = false
                 }
-                console.log(_vm.gamePadButtons.A)
+                // console.log(_vm.gamePadButtons.A)
             }, 100)
 
-            this.cardsIndex = 0
+            _vm.cardsIndex = 0
         });
 
         window.addEventListener("gamepaddisconnected", function(e) {
+            //show mouse
+            document.body.style.cursor = 'default';
             console.log("Gamepad disconnected from index %d: %s", e.gamepad.index, e.gamepad.id); 
             _vm.usingGamePad = false;
             _vm.gamePadButtons.A = false
@@ -584,7 +608,7 @@ var app = new Vue({
             _vm.gamePadButtons.Y = false
             _vm.gamePadButtons.Pause = false
             if(interval) clearInterval(interval)
-            this.cardsIndex = -1
+            _vm.cardsIndex = -1
         });
     },
     watch: {
